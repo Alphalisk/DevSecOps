@@ -67,3 +67,77 @@ Met het script is het gelukt om:
 Hierbij het resultaat in de browser:
 ![alt text](Screenshots\gitae-online.png)
 
+Gitea succesvol geinstalleerd:
+
+![alt text](Screenshots\Opdracht2\installgitae.png)
+
+### Basisopdracht 2
+
+instellen van gitea 
+
+```bash
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git init
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint: 
+hint:   git config --global init.defaultBranch <name>
+hint: 
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint: 
+hint:   git branch -m <name>
+Initialized empty Git repository in /home/Dockeradmin/gitea/demo-app/.git/
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git checkout -b main
+Switched to a new branch 'main'
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git add .
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git commit -m "🎉 Eerste commit"
+On branch main
+
+Initial commit
+
+nothing to commit (create/copy files and use "git add" to track)
+Dockeradmin@vm-gitea:~/gitea/demo-app$ touch initial.txt
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git add *
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git commit -m "🎉 Eerste commit"
+[main (root-commit) a8a24f9] 🎉 Eerste commit
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 initial.txt
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git remote add origin http://100.85.133.118:3000/Dockeradmin/demo-app.git
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git push -u origin main
+Username for 'http://100.85.133.118:3000': Richard
+Password for 'http://Richard@100.85.133.118:3000': 
+remote: Verify
+fatal: Authentication failed for 'http://100.85.133.118:3000/Dockeradmin/demo-app.git/'
+Dockeradmin@vm-gitea:~/gitea/demo-app$ git push -u origin main
+Username for 'http://100.85.133.118:3000': Dockeradmin
+Password for 'http://Dockeradmin@100.85.133.118:3000':
+Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 225 bytes | 112.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+remote: . Processing 1 references
+remote: Processed 1 references in total
+To http://100.85.133.118:3000/Dockeradmin/demo-app.git
+ * [new branch]      main -> main
+Branch 'main' set up to track remote branch 'main' from 'origin'.
+Dockeradmin@vm-gitea:~/gitea/demo-app$
+```
+
+
+installeren van de app.
+
+```bash
+Dockeradmin@vm-gitea:~/gitea/demo-app$ ls -l
+total 4
+-rw-rw-r-- 1 Dockeradmin Dockeradmin    0 Apr  5 13:58 initial.txt
+-rw-rw-r-- 1 Dockeradmin Dockeradmin 1185 Apr  5 14:06 setup-demo-app.sh
+Dockeradmin@vm-gitea:~/gitea/demo-app$ chmod +x setup-demo-app.sh 
+Dockeradmin@vm-gitea:~/gitea/demo-app$ ./setup-demo-app.sh 
+📁 Maak package.json
+📝 Maak server.js
+🐳 Maak Dockerfile
+🤖 Voeg .drone.yml toe
+✅ Demo app en Drone pipeline zijn klaar!
+Dockeradmin@vm-gitea:~/gitea/demo-app$ 
+```
