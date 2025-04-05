@@ -20,15 +20,16 @@ Inventaris:
 - daarna kan het afgetrapt worden. 
 - Op het eind wil de compose-up niet altijd werken. het einde opnieuw aftrappen doet het dan vaak wel.
 
-## gitea
+## Gitea, Drone en productie
+
+Hoe in te loggen:
 
 - Gitea
-  `http://100.85.133.118:3000/`
+  `http://100.85.133.118:3000`
 - Drone
-  `http://100.85.133.118:8080/`
+  `http://100.80.163.27:8080`
+- productie
+  `http://100.122.151.29:xxx`
 
 
-productie gebruiker:
-  sudo adduser deploy
-  sudo mkdir -p /home/deploy/deploy-demo
-  sudo chown deploy:deploy /home/deploy/deploy-demo
+
