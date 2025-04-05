@@ -73,7 +73,7 @@ Gitea succesvol geinstalleerd:
 
 ### Basisopdracht 2
 
-instellen van gitea 
+instellen van gitea (Op de VM 166)
 
 ```bash
 Dockeradmin@vm-gitea:~/gitea/demo-app$ git init
@@ -141,3 +141,11 @@ Dockeradmin@vm-gitea:~/gitea/demo-app$ ./setup-demo-app.sh
 ✅ Demo app en Drone pipeline zijn klaar!
 Dockeradmin@vm-gitea:~/gitea/demo-app$ 
 ```
+
+Installeren van drone op een andere VM (165)
+
+![alt text](Screenshots\Opdracht2\droneinstall.png)
+
+De Drone is gekoppeld met gitea.
+
+![alt text](Screenshots\Opdracht2\Drone_gekoppeld_demo.png)
