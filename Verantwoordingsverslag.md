@@ -149,3 +149,11 @@ Installeren van drone op een andere VM (165)
 De Drone is gekoppeld met gitea.
 
 ![alt text](Screenshots\Opdracht2\Drone_gekoppeld_demo.png)
+
+De stappen werken tot de build fase:
+
+![alt text](Screenshots\Opdracht2\werkt_tot_build.png)
+
+De build fase werkt nu ook:
+
+![alt text](Screenshots\Opdracht2\werkt_tot_build.png)

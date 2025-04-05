@@ -246,7 +246,7 @@ echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf > /dev/null
 sudo apt install docker-compose -y
 cd ~/gitea
 echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf > /dev/null 
-docker-compose up -d
+docker compose up -d
 EOF
 
 

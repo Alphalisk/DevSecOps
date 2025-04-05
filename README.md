@@ -26,3 +26,9 @@ Inventaris:
   `http://100.85.133.118:3000/`
 - Drone
   `http://100.85.133.118:8080/`
+
+
+productie gebruiker:
+  sudo adduser deploy
+  sudo mkdir -p /home/deploy/deploy-demo
+  sudo chown deploy:deploy /home/deploy/deploy-demo
