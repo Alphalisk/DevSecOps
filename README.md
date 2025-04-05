@@ -16,10 +16,6 @@ Inventaris:
 
 # Gebruikersinstructie `GoldenImage_maak_vm_ubuntu_tailscale`
 
-- De parameters moeten een IP bevatten die nog neit in gebruik is!
-- te wijzigen 5 parameters voor gebruik (alles met `Dit aanpassen`!)
-  ![alt text](Screenshots\WijzigInstellingen.png)
+- Het script moet een IP bevatten die nog niet in gebruik is! En voor tailscale ook niet in gebruik is geweest.
 - daarna kan het afgetrapt worden. 
-- Bij de eerste aftrap kan de melding komen halverwege dat de SSH key public key indien IP eerder gebruikt en verwijderd.
-- Los dit op met `ssh-keygen -f "/home/beheerder/.ssh/known_hosts" -R "10.24.13.xxx"` xxx = de gebruikte IP *(kan ook automatisch in script)*
-- daarna kan het opnieuw vanaf dat punt verder afgetrapt worden.
+- Op het eind wil de compose-up niet altijd werken. het einde opnieuw aftrappen doet het dan vaak wel.

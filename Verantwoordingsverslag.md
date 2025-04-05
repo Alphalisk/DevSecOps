@@ -60,3 +60,10 @@ De netwerkconfiguratie is als volgt:
 |pve01   |10.24.13.101 |managed node |100.104.126.78|
 |pve02   |10.24.13.102 |managed node |100.84.145.8  |
 
+Met het script is het gelukt om:
+- automatisch een VM te maken + verbinden met tailgate
+- Ubuntu, Docker/Docker Compose en gitae te installeren. 
+
+Hierbij het resultaat in de browser:
+![alt text](Screenshots\gitae-online.png)
+
