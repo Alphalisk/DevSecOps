@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__server__ROOT_URL=http://100.85.133.118:3000/
+      - GITEA__server__SSH_DOMAIN=100.85.133.118
+      - GITEA__server__DOMAIN=100.85.133.118
+    volumes:
+      - ./gitea:/data
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    restart: always
