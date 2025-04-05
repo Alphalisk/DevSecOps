@@ -18,7 +18,7 @@ SSH_PUBKEY_PATH="$HOME/.ssh/id_rsa.pub"
 
 # === Instellingen Tailscale ===
 VM_IP="10.24.13.161" # Dit aanpassen
-SSH_USER="Dockeradmin" # Dit aanpassen
+SSH_USER="Dockeradmin"
 TAILSCALE_ENV="/tmp/tailscale.env"
 VM_HOSTNAME="vm-gitea" # Dit aanpassen
 
