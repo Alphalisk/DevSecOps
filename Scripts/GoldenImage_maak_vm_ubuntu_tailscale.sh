@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# === Instellingen ===
-VMID=160 # Deze veranderen!
-VMNAME="VM" # Deze veranderen!
+# === Instellingen Basis ===
+VMID=161 # Dit aanpassen
+VMNAME="vm-gitea" # Dit aanpassen
 CEPHPOOL="vm-storage"
 DISK="vm-${VMID}-disk-0"
 CLOUDIMG_URL="https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
@@ -11,11 +11,18 @@ IMG_RAW="ubuntu.raw"
 IMG_RESIZED="ubuntu-20G.raw"
 MEM=2048
 CORES=2
-IP="10.24.13.160/24" # Deze veranderen!
+IP="10.24.13.161/24" # Dit aanpassen
 GW="10.24.13.1"
 USER="Dockeradmin"
 SSH_PUBKEY_PATH="$HOME/.ssh/id_rsa.pub"
 
+# === Instellingen Tailscale ===
+VM_IP="10.24.13.161" # Dit aanpassen
+SSH_USER="Dockeradmin" # Dit aanpassen
+TAILSCALE_ENV="/tmp/tailscale.env"
+VM_HOSTNAME="vm-gitea" # Dit aanpassen
+
+# === Basis installatie VM met Ubuntu ===
 echo "📥 Download Ubuntu Cloud Image"
 sudo wget -O $CLOUDIMG $CLOUDIMG_URL
 
@@ -77,12 +84,12 @@ sudo ufw --force enable
 sudo ufw status verbose
 EOF
 
-
-
 # 8. Update & upgrade uitvoeren
 # Hij gaat de eerste keer mis door een blokkade
+ssh $USER@${IP%/*} "echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf"
 ssh $USER@${IP%/*} "sudo kill -9 \$(pgrep apt-get)"
 ssh $USER@${IP%/*} "sudo dpkg --configure -a"
+ssh $USER@${IP%/*} "echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf"
 
 echo "🔄 System update uitvoeren"
 ssh $USER@${IP%/*} << 'EOF'
@@ -99,3 +106,37 @@ until ssh -o ConnectTimeout=2 -o StrictHostKeyChecking=no -o BatchMode=yes $USER
 done
 
 echo "✅ VM $VMID is volledig klaar en geconfigureerd op $IP"
+
+# === installatie Tailscale ===
+# 🔑 SSH toegang check
+echo "📤 Kopieer Tailscale config naar VM..."
+scp $TAILSCALE_ENV ${SSH_USER}@${VM_IP}:/tmp/tailscale.env
+
+# 🚀 Installatie + setup in de VM
+ssh ${SSH_USER}@${VM_IP} << 'EOF'
+set -e
+
+# 🧪 DNS fix
+echo "nameserver 1.1.1.1" | sudo tee /etc/resolv.conf
+
+# 📦 Installatie Tailscale
+source /tmp/tailscale.env
+sudo apt update
+sudo apt install -y curl jq
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo systemctl enable --now tailscaled
+
+# ⏳ Wachten op backend
+for i in {1..10}; do
+  if tailscale status &>/dev/null; then break; fi
+  echo "⏳ Wachten op tailscaled backend..."; sleep 2
+done
+
+# 🔐 Verbinden
+sudo tailscale up --authkey "$TAILSCALE_AUTH_KEY" --hostname VM-gitea --ssh
+
+# ✅ Status tonen
+echo "🌐 Tailscale IP:"; tailscale ip -4 | head -n 1
+echo "🔗 DNS naam:"; tailscale status --json | jq -r ".Self.DNSName"
+EOF
+
