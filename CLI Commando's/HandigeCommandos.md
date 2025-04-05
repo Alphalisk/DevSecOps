@@ -12,3 +12,6 @@ sudo systemctl restart systemd-resolved
 sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
 ---
+
+# tailscale ip
+tailscale ip -4 | head -n 1
