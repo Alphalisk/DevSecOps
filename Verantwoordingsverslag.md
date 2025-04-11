@@ -419,4 +419,71 @@ Hieronder zie je een screenshot van de werkende monitoring:
 
 ---
 
-#### Monitoring van de webapplicatie
+#### Alerting
+
+In de Uptime Kuma app zijn nu automatische notificaties ingesteld.
+Zodra de productie app Hello World down is komt er een automatisch alert naar discord. `http://100.122.151.29:8080/`
+
+![alt text](Screenshots\Extra_opdrachten\Discord_alert.png)
+
+---
+
+#### Static Application Security Testing (SAST)
+
+Er wordt nu een SAST scan toegevoegd aan de pipeline:
+```yaml
+- name: security scan
+    image: node:18
+    commands:
+      - npm audit --audit-level=moderate
+```
+
+Hierbij de complete `.drone` file:
+
+```yaml
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: install & build
+    image: node:18
+    commands:
+      - npm install
+
+  - name: security scan
+    image: node:18
+    commands:
+      - npm audit --audit-level=moderate
+
+  - name: upload
+    image: appleboy/drone-scp
+    settings:
+      host: 10.24.13.167
+      username: Dockeradmin
+      port: 22
+      source: "./"
+      target: "/home/Dockeradmin/deploy"
+      key:
+        from_secret: ssh_key
+
+  - name: deploy
+    image: appleboy/drone-ssh
+    settings:
+      host: 10.24.13.167
+      username: Dockeradmin
+      port: 22
+      key:
+        from_secret: ssh_key
+      script:
+        - cd /home/Dockeradmin/deploy
+        - echo "🛑 Stop oude container"
+        - docker stop demo-container || true
+        - docker rm demo-container || true
+        - echo "🐳 Build nieuwe container"
+        - docker build -t demo-app .
+        - echo "�� Start nieuwe container"
+        - docker run -d --name demo-container -p 8080:8080 demo-app
+```
+
+![alt text](Screenshots\Extra_opdrachten\SAST_stap_pipeline.png)
