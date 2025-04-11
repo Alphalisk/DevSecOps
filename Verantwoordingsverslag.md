@@ -311,3 +311,58 @@ De bouwstraat bestaat uit **3 stappen**:
      - Stoppen en verwijderen van de bestaande container (`demo-container`)
      - Bouwen van een nieuwe Docker image op basis van de geuploade code
      - Starten van een nieuwe container die de applicatie draait op poort `8080`
+
+
+---
+
+### Extra functionaliteiten:
+
+---
+- **Containerisatie met docker compose**
+
+Dit is al uitgevoerd op de basis installatie!
+
+---
+- **Monitoring van de infrastructuur**
+
+De volgende script is gebruikt om de VM's te kunnen monitoren:
+
+```bash
+# # purge old netdata
+# ssh Dockeradmin@10.24.13.165 << 'EOF'
+# sudo systemctl stop netdata || true
+# sudo pkill netdata || true
+# sudo apt purge --yes netdata netdata-core netdata-web netdata-plugins-* || true
+# sudo rm -rf /etc/netdata /var/lib/netdata /var/cache/netdata /opt/netdata /usr/lib/netdata /usr/sbin/netdata
+# sudo rm -f /etc/systemd/system/netdata.service
+# EOF
+
+# clean install Netdata
+ssh Dockeradmin@10.24.13.165 << 'EOF'
+echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf
+bash <(curl -SsL https://my-netdata.io/kickstart.sh) --dont-wait
+EOF
+
+# Firewall
+ssh Dockeradmin@10.24.13.165 << 'EOF'
+echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf
+sudo ufw allow 19999/tcp comment 'Allow Netdata'
+sudo systemctl restart netdata
+EOF
+
+# Externe toegang instellen
+ssh Dockeradmin@10.24.13.165 << 'EOF'
+sudo mkdir -p /etc/netdata
+sudo sed -i 's/^  bind to = localhost/  bind to = 0.0.0.0/' /etc/netdata/netdata.conf
+sudo systemctl restart netdata
+EOF
+```
+
+![alt text](Screenshots\Extra_opdrachten\MonitoringVM-prod.png)
+
+Elke VM (productie, drone en gitea) heeft netdata monitoring gekregen.
+De monitoring is vastgelegd in de video `Monitoring_Infrastructuur.mp4`.
+
+---
+
+

@@ -5,7 +5,8 @@ Inventaris:
 - Het verantwoordingsverslag voor de opdrachten wordt in het bestand *Verantwoordingsverslag.md* bijgehouden.
 - De map screenhots bevat bewijsvoering
 - De map Scripts bevat bash scripts
-- De map Playbooks bevat de .yml files
+- De map Playbooks bevat de ansible files
+- De map YML files bevat de docker-compose.yml en .drone.yml files
 
 **Netwerkconfiguratie:**
 |nodenaam|IP intern    |Type node    |IP Tailscale  |
