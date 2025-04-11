@@ -68,7 +68,7 @@ Hierbij het resultaat in de browser:
 
 Gitea succesvol geinstalleerd:
 
-![alt text](Screenshots\Opdracht2\installgitae.png)
+![alt text](Screenshots\installgitae.png)
 
 ---
 
@@ -144,27 +144,23 @@ Dockeradmin@vm-gitea:~/gitea/demo-app$
 
 2) Installeren van drone op een andere VM (165)
 
-![alt text](Screenshots\Opdracht2\droneinstall.png)
+![alt text](Screenshots\droneinstall.png)
 
 De Drone is gekoppeld met gitea.
 
-![alt text](Screenshots\Opdracht2\Drone_gekoppeld_demo.png)
-
-De stappen werken tot de build fase:
-
-![alt text](Screenshots\Opdracht2\werkt_tot_build.png)
+![alt text](Screenshots\Drone_gekoppeld_demo.png)
 
 De build fase werkt nu ook:
 
-![alt text](Screenshots\Opdracht2\werkt_tot_build.png)
+![alt text](Screenshots\werkt_tot_build.png)
 
 Alle fasen werken:
 
-![alt text](Screenshots\Opdracht2\bouwstraatgereed.png)
+![alt text](Screenshots\bouwstraatgereed.png)
 
-3) De derde VM maken bedoeld als productie omgeving. (VM167)
+1) De derde VM maken bedoeld als productie omgeving. (VM167)
 
-![alt text](Screenshots\Opdracht2\ProxMoxVM's.png)
+![alt text](Screenshots\ProxMoxVM's.png)
 
 Op pve02 zijn er 3 VM's met Ubuntu en docker-compose geinstalleerd.
 
@@ -322,6 +318,11 @@ De bouwstraat bestaat uit **3 stappen**:
 
 Dit is al uitgevoerd op de basis installatie!
 
+- drone werkt op container met docker
+- gitea werkt op container met docker
+- productieomgeving app werkt op container met docker
+- De bouwstraat maakt automatisch een nieuwe container en verwijdert de oude container van de app.
+
 ---
 #### **Monitoring van de infrastructuur**
 
@@ -358,10 +359,12 @@ sudo systemctl restart netdata
 EOF
 ```
 
-![alt text](Screenshots\Extra_opdrachten\MonitoringVM-prod.png)
+![alt text](Screenshots\MonitoringVM-prod.png)
 
 Elke VM (productie, drone en gitea) heeft netdata monitoring gekregen.
 De monitoring is vastgelegd in de video `Monitoring_Infrastructuur.mp4`.
+
+![alt text](Screenshots\netdata_alle_VM.png)
 
 ---
 
@@ -414,7 +417,7 @@ Uptime Kuma voert periodiek een check uit op de applicatie en registreert:
 
 Hieronder zie je een screenshot van de werkende monitoring:
 
-![alt text](Screenshots\Extra_opdrachten\App-monitor.png)
+![alt text](Screenshots\App-monitor.png)
 
 
 ---
@@ -424,7 +427,7 @@ Hieronder zie je een screenshot van de werkende monitoring:
 In de Uptime Kuma app zijn nu automatische notificaties ingesteld.
 Zodra de productie app Hello World down is komt er een automatisch alert naar discord. `http://100.122.151.29:8080/`
 
-![alt text](Screenshots\Extra_opdrachten\Discord_alert.png)
+![alt text](Screenshots\Discord_alert.png)
 
 ---
 
@@ -486,4 +489,4 @@ steps:
         - docker run -d --name demo-container -p 8080:8080 demo-app
 ```
 
-![alt text](Screenshots\Extra_opdrachten\SAST_stap_pipeline.png)
+![alt text](Screenshots\SAST_stap_pipeline.png)
