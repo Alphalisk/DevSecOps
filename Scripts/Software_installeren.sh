@@ -84,7 +84,7 @@ COMPOSE
 
 echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf > /dev/null
 cd ~/gitea
-docker-compose up -d
+docker compose up -d
 EOF
 
 echo "✅ Gitea zou nu moeten draaien op http://$IP:3000"

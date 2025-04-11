@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# === Drone installatie op dezelfde VM als Gitea ===
+# === Drone installatie op een andere VM als Gitea ===
 DRONE_HOST="http://10.24.13.163"  
 GITEA_SERVER="http://10.24.13.163"  
 GITEA_CLIENT_ID="__GITEA_CLIENT_ID__"

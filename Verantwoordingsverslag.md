@@ -42,10 +42,6 @@ monitoren, denk aan uptime en responsetijden van server requests).
 - Containerisatie
 - Eigen inbreng (in overleg met docent)
 
-### Opmerking vooraf
-
-Om de bouwstraat te maken komen er geen pushes naar de main. Op de acceptatie-omgving en/of test omgeving worden nieuwe features ontwikkeld.
-Een succesvol geteste complete oplevering gaat vervolgens mergen met de main.
 
 ### Basisopdracht 1 - Maak een VM voor je Gitea server (Self-hosted Git)
 
@@ -60,6 +56,9 @@ De netwerkconfiguratie is als volgt:
 |pve01   |10.24.13.101 |managed node |100.104.126.78|
 |pve02   |10.24.13.102 |managed node |100.84.145.8  |
 
+
+
+
 Met het script is het gelukt om:
 - automatisch een VM te maken + verbinden met tailgate
 - Ubuntu, Docker/Docker Compose en gitae te installeren. 
@@ -71,9 +70,11 @@ Gitea succesvol geinstalleerd:
 
 ![alt text](Screenshots\Opdracht2\installgitae.png)
 
+---
+
 ### Basisopdracht 2
 
-instellen van gitea (Op de VM 166)
+1) instellen van gitea (Op de VM 166)
 
 ```bash
 Dockeradmin@vm-gitea:~/gitea/demo-app$ git init
@@ -124,8 +125,7 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 Dockeradmin@vm-gitea:~/gitea/demo-app$
 ```
 
-
-installeren van de app.
+installeren van de Hello world `demo-app`.
 
 ```bash
 Dockeradmin@vm-gitea:~/gitea/demo-app$ ls -l
@@ -142,7 +142,7 @@ Dockeradmin@vm-gitea:~/gitea/demo-app$ ./setup-demo-app.sh
 Dockeradmin@vm-gitea:~/gitea/demo-app$ 
 ```
 
-Installeren van drone op een andere VM (165)
+2) Installeren van drone op een andere VM (165)
 
 ![alt text](Screenshots\Opdracht2\droneinstall.png)
 
@@ -157,3 +157,157 @@ De stappen werken tot de build fase:
 De build fase werkt nu ook:
 
 ![alt text](Screenshots\Opdracht2\werkt_tot_build.png)
+
+Alle fasen werken:
+
+![alt text](Screenshots\Opdracht2\bouwstraatgereed.png)
+
+3) De derde VM maken bedoeld als productie omgeving. (VM167)
+
+![alt text](Screenshots\Opdracht2\ProxMoxVM's.png)
+
+Op pve02 zijn er 3 VM's met Ubuntu en docker-compose geinstalleerd.
+
+- Gitea
+intern:      `http://10.24.13.166`
+tailscale:   `http://100.85.133.118:3000/`
+
+- Drone
+intern:      `http://10.24.13.165`
+tailscale:   `http://100.80.163.27:8080/`
+
+- Productie
+intern:      `http://10.24.13.167`
+tailscale:   `http://100.122.151.29:8080`
+
+---
+
+### ✅ Basisopdracht 3 – Werkende Pipeline
+
+De gehele DevSecOps pipeline is succesvol opgezet voor de **Hello World demo-app**. De werking hiervan is vastgelegd in de video `Basisbouwstraat_werkend.mp4`.
+
+Onderstaand de gebruikte `.drone.yml` configuratie in de demo-app:
+
+```yaml
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: install & build
+    image: node:18
+    commands:
+      - npm install
+
+  - name: upload
+    image: appleboy/drone-scp
+    settings:
+      host: 10.24.13.167
+      username: Dockeradmin
+      port: 22
+      source: "./"
+      target: "/home/Dockeradmin/deploy"
+      key:
+        from_secret: ssh_key
+
+  - name: deploy
+    image: appleboy/drone-ssh
+    settings:
+      host: 10.24.13.167
+      username: Dockeradmin
+      port: 22
+      key:
+        from_secret: ssh_key
+      script:
+        - cd /home/Dockeradmin/deploy
+        - echo "🛑 Stop oude container"
+        - docker stop demo-container || true
+        - docker rm demo-container || true
+        - echo "🐳 Build nieuwe container"
+        - docker build -t demo-app .
+        - echo "🚀 Start nieuwe container"
+        - docker run -d --name demo-container -p 8080:8080 demo-app
+```
+
+Onderstaand de gebruikte `docker-compose.yml` configuratie in Gitea:
+```yml
+version: '3'
+
+services:
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__server__ROOT_URL=http://100.85.133.118:3000/
+      - GITEA__server__SSH_DOMAIN=100.85.133.118
+      - GITEA__server__DOMAIN=100.85.133.118
+    volumes:
+      - ./gitea:/data
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    restart: always
+```
+
+Onderstaand de gebruikte `docker-compose.yml` configuratie in drone:
+
+```yml
+version: '3'
+
+services:
+  drone-server:
+    image: drone/drone:2
+    container_name: drone
+    ports:
+      - 8080:80
+    volumes:
+      - drone-data:/data
+    restart: always
+    environment:
+      DRONE_GITEA_SERVER: http://100.85.133.118:3000
+      DRONE_GITEA_CLIENT_ID: 63aba40a-ada0-459a-9247-19b0e86fe9ce
+      DRONE_GITEA_CLIENT_SECRET: gto_3uuq3sbkhw7xtx4sahtovsiugdmzgd767lsxqiwamglddovjvkzq
+      DRONE_RPC_SECRET: supersekret123
+      DRONE_SERVER_HOST: 100.80.163.27:8080
+      DRONE_SERVER_PROTO: http
+      DRONE_USER_CREATE: username=Dockeradmin,admin=true
+      DRONE_LOGS_DEBUG: true
+      DRONE_LOGS_TRACE: true
+
+  drone-runner:
+    image: drone/drone-runner-docker:1
+    container_name: drone-runner
+    depends_on:
+      - drone-server
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DRONE_RPC_PROTO: http
+      DRONE_RPC_HOST: drone-server
+      DRONE_RPC_SECRET: supersekret123
+      DRONE_RUNNER_CAPACITY: 2
+      DRONE_RUNNER_NAME: runner-01
+
+volumes:
+  drone-data:
+
+```
+
+#### 📦 Uitleg van de pipeline:
+
+De bouwstraat bestaat uit **3 stappen**:
+
+1. **Installatie en build**  
+   - De benodigde dependencies worden geïnstalleerd met `npm install`.
+
+2. **Upload naar productieomgeving**  
+   - De inhoud van de applicatiemap wordt via **SCP** overgezet naar de map `/home/Dockeradmin/deploy` op de productie-VM (`10.24.13.167`).
+
+3. **Deployment via SSH**  
+   - Via een remote script worden de volgende acties uitgevoerd op de productie-VM:
+     - Stoppen en verwijderen van de bestaande container (`demo-container`)
+     - Bouwen van een nieuwe Docker image op basis van de geuploade code
+     - Starten van een nieuwe container die de applicatie draait op poort `8080`
