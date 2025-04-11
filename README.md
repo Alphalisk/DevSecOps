@@ -25,11 +25,16 @@ Inventaris:
 Hoe in te loggen:
 
 - Gitea
-  `http://100.85.133.118:3000`
+intern:      `http://10.24.13.166`
+tailscale:   `http://100.85.133.118:3000/`
+
 - Drone
-  `http://100.80.163.27:8080`
-- productie
-  `http://100.122.151.29:xxx`
+intern:      `http://10.24.13.165`
+tailscale:   `http://100.80.163.27:8080/`
+
+- Productie
+intern:      `http://10.24.13.167`
+tailscale:   `http://100.122.151.29:8080`
 
 
 

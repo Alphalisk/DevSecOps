@@ -8,7 +8,7 @@ steps:
     commands:
       - npm install
 
-  - name: deploy
+  - name: upload
     image: appleboy/drone-scp
     settings:
       host: 10.24.13.167
@@ -17,4 +17,22 @@ steps:
       source: "./"
       target: "/home/Dockeradmin/deploy"
       key:
-        from_secret: ssh_key # secret staat op drone op de browser
+        from_secret: ssh_key
+
+  - name: deploy
+    image: appleboy/drone-ssh
+    settings:
+      host: 10.24.13.167
+      username: Dockeradmin
+      port: 22
+      key:
+        from_secret: ssh_key
+      script:
+        - cd /home/Dockeradmin/deploy
+        - echo "🛑 Stop oude container"
+        - docker stop demo-container || true
+        - docker rm demo-container || true
+        - echo "🐳 Build nieuwe container"
+        - docker build -t demo-app .
+        - echo "�� Start nieuwe container"
+        - docker run -d --name demo-container -p 8080:8080 demo-app
