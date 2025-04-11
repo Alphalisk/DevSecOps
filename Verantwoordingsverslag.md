@@ -318,12 +318,12 @@ De bouwstraat bestaat uit **3 stappen**:
 ### Extra functionaliteiten:
 
 ---
-- **Containerisatie met docker compose**
+#### **Containerisatie met docker compose**
 
 Dit is al uitgevoerd op de basis installatie!
 
 ---
-- **Monitoring van de infrastructuur**
+#### **Monitoring van de infrastructuur**
 
 De volgende script is gebruikt om de VM's te kunnen monitoren:
 
@@ -365,4 +365,58 @@ De monitoring is vastgelegd in de video `Monitoring_Infrastructuur.mp4`.
 
 ---
 
+#### Monitoring van de webapplicatie
 
+Om de beschikbaarheid en prestaties van mijn gehoste demo-applicatie te monitoren, heb ik [Uptime Kuma](https://github.com/louislam/uptime-kuma) ingezet.  
+Uptime Kuma is een gebruiksvriendelijke monitoringtool die uptime, responstijden en storingen inzichtelijk maakt via een eigen webinterface.
+
+Uptime Kuma is geïnstalleerd op mijn monitoring-VM met behulp van Docker:
+
+```bash
+mkdir -p ~/uptime-kuma
+cd ~/uptime-kuma
+```
+
+```yml
+version: '3'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    ports:
+      - "3001:3001"   # Je kunt dit aanpassen als je 3001 al gebruikt
+    volumes:
+      - ./data:/app/data
+    restart: always
+```
+
+```bash
+sudo ufw allow 8080/tcp comment 'Allow demo-app access'
+docker compose up -d
+```
+
+De webinterface is bereikbaar op: `http://100.122.151.29:3001`
+
+### 🖥️ Monitoringconfiguratie
+
+Er is een HTTP-monitor toegevoegd voor de demo-applicatie op de productie-VM:
+
+- **Naam:** Demo App
+- **URL:** http://10.24.13.167:8080
+- **Interval:** 30 seconden
+- **Timeout:** 5 seconden
+
+Uptime Kuma voert periodiek een check uit op de applicatie en registreert:
+- Beschikbaarheidspercentage (uptime)
+- Gemiddelde responstijd
+- Grafieken van status over tijd
+
+Hieronder zie je een screenshot van de werkende monitoring:
+
+![alt text](Screenshots\Extra_opdrachten\App-monitor.png)
+
+
+---
+
+#### Monitoring van de webapplicatie
